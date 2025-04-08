@@ -1,7 +1,6 @@
 // Game state variables
 let gameActive = false;  // Tracks if game is currently running
 let gameInterval;        // Stores the interval that creates drops
-let score = 0;          // Tracks player's score
 
 // Event listener for the start button
 document.getElementById('start-btn').addEventListener('click', startGame);
@@ -13,9 +12,7 @@ function startGame() {
     
     // Set up initial game state
     gameActive = true;
-    score = 0;
     document.getElementById('start-btn').disabled = true;
-    document.getElementById('score').textContent = score;
     
     // Start creating drops every 1000ms (1 second)
     gameInterval = setInterval(createDrop, 1000);
@@ -41,17 +38,9 @@ function createDrop() {
     // Set drop animation speed
     drop.style.animationDuration = '4s';
     
-    // Handle scoring when drop is clicked
+    // Simple click handler to remove drops
     drop.addEventListener('click', () => {
-        if (isBadDrop) {
-            // Subtract point for clicking bad drop, but don't go below zero
-            if (score > 0) score--;
-        } else {
-            // Add point for clicking good drop
-            score++;
-        }
-        document.getElementById('score').textContent = score.toString();
-        drop.remove();  // Remove drop after it's clicked
+        drop.remove();
     });
     
     // Add drop to game container
