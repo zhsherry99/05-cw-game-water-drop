@@ -18,14 +18,7 @@ function startGame() {
 function createDrop() {
     // Create a new div element that will be our water drop
     const drop = document.createElement('div');
-    
-    // 20% chance to make a bad drop (pollutant)
-    // Math.random() gives number between 0-1, so < 0.2 is 20% chance
-    if (Math.random() < 0.2) {
-        drop.className = 'water-drop bad-drop';
-    } else {
-        drop.className = 'water-drop';
-    }
+    drop.className = 'water-drop';
     
     // Make drops different sizes for visual variety
     // Will be between 0.5 (half size) and 1.5 (150% size)
