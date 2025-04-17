@@ -39,6 +39,7 @@ Here’s what you're required to implement to bring the game to life:
 - Add **charity: water branding**
   - Use the provided logo  
   - Use the [charity: water brand guidelines](https://drive.google.com/file/d/1ct4zYRIwHAtxoNQoeaVwWYPdnruSC6sr/view) to stay on-brand with colors and styling
+  - Add styling rules to ensure your game layout adjusts well across different screen sizes
 
 
 These are the minimum requirements, but if you'd like an additional challenge go ahead and give the LevelUps a shot! For example, you can set up logic to make some of the drops "bad" drops that remove points if the user click them, complete with a different color to distinguish them from "good" drops. Have fun and make the game your own!
