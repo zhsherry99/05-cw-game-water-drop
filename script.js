@@ -1,52 +1,50 @@
-// Game state variables
-let gameActive = false;  // Tracks if game is currently running
-let gameInterval;        // Stores the interval that creates drops
+// Start game when button is clicked
+let gameRunning = false;
+let dropMaker;
 
-// Event listener for the start button
 document.getElementById('start-btn').addEventListener('click', startGame);
 
-// Game initialization function
 function startGame() {
-    // Prevent multiple game instances
-    if (gameActive) return;
+    if (gameRunning) return;
     
-    // Set up initial game state
-    gameActive = true;
+    gameRunning = true;
     document.getElementById('start-btn').disabled = true;
     
-    // Start creating drops every 1000ms (1 second)
-    gameInterval = setInterval(createDrop, 1000);
+    // Create new drop every second
+    dropMaker = setInterval(createDrop, 1000);
 }
 
-// Function to create and manage individual water drops
 function createDrop() {
     const drop = document.createElement('div');
     
-    // Randomly determine if this drop is good or bad (20% chance of bad)
-    const isBadDrop = Math.random() < 0.2;
-    drop.className = isBadDrop ? 'water-drop bad-drop' : 'water-drop';
+    // 20% chance to make a bad drop
+    if (Math.random() < 0.2) {
+        drop.className = 'water-drop bad-drop';
+    } else {
+        drop.className = 'water-drop';
+    }
     
-    // Create random size variation for visual interest
-    const scale = 0.8 + Math.random() * 0.7;  // Results in 80% to 150% of original size
-    drop.style.transform = `scale(${scale})`;
+    // Make drop a random size
+    const size = Math.random() + 0.5;  // Random size between 0.5 and 1.5
+    drop.style.transform = `scale(${size})`;
     
-    // Position drop randomly along the width of the game container
+    // Put drop at random position
     const gameWidth = document.getElementById('game-container').offsetWidth;
-    const randomX = Math.random() * (gameWidth - 40);
-    drop.style.left = `${randomX}px`;
+    const xPosition = Math.random() * (gameWidth - 40);
+    drop.style.left = xPosition + 'px';
     
-    // Set drop animation speed
+    // Set how fast drop falls
     drop.style.animationDuration = '4s';
     
-    // Simple click handler to remove drops
+    // Remove drop when clicked
     drop.addEventListener('click', () => {
         drop.remove();
     });
     
-    // Add drop to game container
+    // Add drop to game
     document.getElementById('game-container').appendChild(drop);
     
-    // Remove drop if it reaches bottom without being clicked
+    // Remove drop when it hits bottom
     drop.addEventListener('animationend', () => {
         drop.remove();
     });

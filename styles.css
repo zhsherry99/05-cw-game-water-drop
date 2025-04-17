@@ -80,14 +80,20 @@ body {
 
 .water-drop {
     position: absolute;
-    width: 40px;  /* increased from 30px */
-    height: 40px; /* increased from 30px */
+    width: 60px;  /* increased from 40px */
+    height: 60px; /* increased from 40px */
     background-color: #0099ff;
-    border-radius: 50% 50% 50% 50%;
+    border-radius: 50%;
     animation: dropFall linear forwards;
     transform-origin: center;
     cursor: pointer;
-    pointer-events: auto;
+    padding: 15px;  /* Add padding for larger click area */
+    margin: -15px;  /* Offset padding to maintain visual size */
+    transition: transform 0.1s ease;  /* Smooth hover effect */
+}
+
+.water-drop:hover {
+    transform: scale(1.1);  /* Slight grow effect on hover */
 }
 
 .bad-drop {
