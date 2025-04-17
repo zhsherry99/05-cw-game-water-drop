@@ -10,7 +10,6 @@ function startGame() {
     if (gameRunning) return;
     
     gameRunning = true;
-    document.getElementById('start-btn').disabled = true;
     
     // Create new drops every second (1000 milliseconds)
     dropMaker = setInterval(createDrop, 1000);
