@@ -35,6 +35,11 @@ function createDrop() {
   // Make drops fall for 4 seconds
   drop.style.animationDuration = "4s";
 
+  // When player clicks a drop, make it disappear
+  drop.addEventListener("click", () => {
+    drop.remove(); // Removes the drop from the game
+  });
+
   // Add the new drop to the game screen
   document.getElementById("game-container").appendChild(drop);
 
