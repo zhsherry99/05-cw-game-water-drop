@@ -27,7 +27,7 @@ function createDrop() {
   drop.style.width = drop.style.height = `${size}px`;
 
   // Position the drop randomly across the game width
-  // Subtract 40 pixels to keep drops fully inside the container
+  // Subtract 60 pixels to keep drops fully inside the container
   const gameWidth = document.getElementById("game-container").offsetWidth;
   const xPosition = Math.random() * (gameWidth - 60);
   drop.style.left = xPosition + "px";
