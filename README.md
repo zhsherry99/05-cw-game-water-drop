@@ -12,9 +12,7 @@ The starter files already include:
 - A **logo image** from charity: water
 - Working code that:
   - Starts the game when the start button is clicked
-  - Makes water drops fall randomly
-  - Makes drops disappear when clicked
-
+  - Makes water drops fall randomly at different sizes
 
 ## What You Need to Add
 
