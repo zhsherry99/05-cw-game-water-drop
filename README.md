@@ -34,7 +34,8 @@ Here’s what you're required to implement to bring the game to life:
 
 ### Visual Styling
 
-- Add **charity: water branding**
+- **Add charity: water branding**
+  
   - Use the provided logo  
   - Use the [charity: water brand guidelines](https://drive.google.com/file/d/1ct4zYRIwHAtxoNQoeaVwWYPdnruSC6sr/view) to stay on-brand with colors and styling
   - Add styling rules to ensure your game layout adjusts well across different screen sizes
