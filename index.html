@@ -14,9 +14,21 @@
             <div class="score">Score: <span id="score">0</span></div>
             <div class="timer">Time: <span id="time">30</span>s</div>
             <button id="start-btn">Start Game</button>
+            <button id="stop-btn">Stop Game</button>
         </div>
         
         <div id="game-container">
+            <div id="bucket" tabindex="0" aria-label="Bucket"></div>
+        </div>
+        <div id="end-screen" class="hidden" role="dialog" aria-modal="true">
+            <div class="end-content">
+                <h2 id="end-title">Game Over</h2>
+                <p id="end-message"></p>
+                <div class="end-actions">
+                    <button id="play-again-btn">Play Again</button>
+                    <button id="close-end-btn">Close</button>
+                </div>
+            </div>
         </div>
     </div>
     

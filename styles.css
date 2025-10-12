@@ -82,6 +82,48 @@ body {
     background-color: #45a049;
 }
 
+#stop-btn {
+    padding: 8px 16px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 8px;
+}
+
+#stop-btn:hover {
+    background-color: #c9302c;
+}
+
+.hidden { display: none; }
+
+#end-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+}
+
+.end-content {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    text-align: center;
+    width: 90%;
+    max-width: 420px;
+}
+
+.end-actions { display: flex; gap: 12px; justify-content: center; margin-top: 12px; }
+
+#play-again-btn, #close-end-btn { padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer; }
+#play-again-btn { background: #4CAF50; color: white; }
+#close-end-btn { background: #ddd; }
+
 .score {
     flex: 0 1 auto;  /* Don't grow, can shrink, auto basis */
     font-size: 24px;
@@ -116,6 +158,23 @@ body {
     margin-top: 0;
     margin-bottom: 5px;  /* reduced from 20px */
     text-align: center;
+}
+
+#bucket {
+    position: absolute;
+    bottom: 10px;
+    left: 0; /* will be positioned in JS */
+    width: 140px;
+    height: 60px;
+    background: linear-gradient(180deg, #8BD1CB, #2E9DF7);
+    border-radius: 8px 8px 20px 20px;
+    border: 3px solid #0b78c5;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Remove pointer cursor for drops since they are no longer clickable */
+.water-drop {
+    cursor: default;
 }
 
 .game-tagline {
