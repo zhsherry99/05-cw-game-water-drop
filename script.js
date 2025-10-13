@@ -129,6 +129,13 @@ function createDrop() {
   const size = initialSize * sizeMultiplier;
   drop.style.width = drop.style.height = `${size}px`;
 
+  // Randomly make some drops "bad" (red) which penalize the player if caught
+  const isBad = Math.random() < 0.18; // ~18% chance
+  if (isBad) {
+    drop.classList.add('bad-drop');
+    drop.dataset.bad = '1';
+  }
+
   // Position the drop randomly across the game width
   // Subtract 60 pixels to keep drops fully inside the container
   const gameWidth = document.getElementById("game-container").offsetWidth;
@@ -163,8 +170,12 @@ function createDrop() {
                          dropRect.top > bucketRect.bottom);
 
     if (intersects) {
-      // award point and remove drop
-      score += 1;
+      // If it's a bad drop, penalize; otherwise award a point
+      if (drop.classList.contains('bad-drop')) {
+        score = Math.max(0, score - 1);
+      } else {
+        score += 1;
+      }
       if (scoreEl) scoreEl.textContent = score;
       drop.remove();
       clearInterval(collisionChecker);
