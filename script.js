@@ -9,7 +9,37 @@ const timeEl = document.getElementById("time");
 
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
-document.getElementById("stop-btn").addEventListener("click", stopGame);
+// stop-btn acts as Restart: reset game state and begin anew
+document.getElementById("stop-btn").addEventListener("click", restartGame);
+
+function restartGame() {
+  // Stop ongoing game silently (don't show modal)
+  if (dropMaker) { clearInterval(dropMaker); dropMaker = null; }
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+  if (bucketMoveInterval) { clearInterval(bucketMoveInterval); bucketMoveInterval = null; }
+  window.removeEventListener('keydown', handleKeyDown);
+  window.removeEventListener('keyup', handleKeyUp);
+
+  // Remove existing drops
+  const container = document.getElementById('game-container');
+  if (container) {
+    const drops = container.querySelectorAll('.water-drop');
+    drops.forEach(d => d.remove());
+  }
+
+  // Reset game state
+  gameRunning = false;
+  score = 0;
+  if (scoreEl) scoreEl.textContent = score;
+  timeLeft = 30;
+  if (timeEl) timeEl.textContent = timeLeft;
+
+  // Hide modal/confetti if visible
+  hideEndModal();
+  stopConfetti();
+  // Do NOT auto-start: wait for player to click Start Game
+  // Keep gameRunning=false so startGame() may be called by the player
+}
 // Keyboard movement for bucket
 let moveLeft = false;
 let moveRight = false;
@@ -83,6 +113,9 @@ function startGame() {
   // Add keyboard listeners
   window.addEventListener('keydown', handleKeyDown);
   window.addEventListener('keyup', handleKeyUp);
+
+  // ensure modal is hidden when starting a new game
+  hideEndModal();
 }
 
 function createDrop() {
@@ -173,59 +206,155 @@ function stopGame() {
   }
   window.removeEventListener('keydown', handleKeyDown);
   window.removeEventListener('keyup', handleKeyUp);
-
-  // Show end screen with appropriate message based on score
-  showEndScreen();
 }
 
-// End screen messages
+// Inline end messages (shown in the score panel)
 const winMessages = [
-  "Amazing! You're a water-catching pro!",
-  "You rocked it — the drops couldn't escape!",
-  "Perfect aim! You saved the day!",
-  "Unstoppable! Those drops never stood a chance!"
+  'Amazing! You caught them all!',
+  'Champion catcher — great job!',
+  'Perfect game — you win!'
 ];
 
 const loseMessages = [
-  "Close one! Try again and beat your score!",
-  "Almost there — practice makes perfect!",
-  "Don't give up! You can get 20 next time!",
-  "Nice effort! Give it another go!"
+  'Nice try — give it another go!',
+  'So close! Practice and try again!',
+  'Keep going — you can beat 20 points!'
 ];
 
 function randomFrom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function showEndScreen() {
-  const endScreen = document.getElementById('end-screen');
-  const endMsg = document.getElementById('end-message');
-  const endTitle = document.getElementById('end-title');
-  if (!endScreen || !endMsg) return;
+// Show end modal when game stops
+const originalStopGame = stopGame;
+stopGame = function() {
+  originalStopGame();
+  // show centered modal and confetti if winning
+  showEndModal();
+};
 
-  if (score >= 20) {
-    endTitle.textContent = 'You Win!';
-    endMsg.textContent = randomFrom(winMessages);
+function showEndModal() {
+  const modal = document.getElementById('end-modal');
+  const msg = document.getElementById('end-modal-message');
+  const title = document.getElementById('end-modal-title');
+  if (!modal || !msg) return;
+  if (score > 20) {
+    title.textContent = 'Congratulations!';
+    msg.textContent = randomFrom(winMessages);
   } else {
-    endTitle.textContent = 'Time Up';
-    endMsg.textContent = randomFrom(loseMessages);
+    title.textContent = 'Time Up';
+    msg.textContent = randomFrom(loseMessages);
   }
-
-  endScreen.classList.remove('hidden');
+  // Make sure modal is visible even if an inline style was previously applied
+  modal.style.display = 'flex';
+  modal.classList.remove('hidden');
+  // Trigger confetti after the modal is visible so we can position bursts beside it
+  if (score > 20) runConfetti();
 }
 
-function hideEndScreen() {
-  const endScreen = document.getElementById('end-screen');
-  if (endScreen) endScreen.classList.add('hidden');
+function hideEndModal() {
+  const modal = document.getElementById('end-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+  stopConfetti();
 }
 
-// Wire up end-screen buttons
-document.addEventListener('DOMContentLoaded', () => {
-  const playAgain = document.getElementById('play-again-btn');
-  const closeBtn = document.getElementById('close-end-btn');
-  if (playAgain) playAgain.addEventListener('click', () => {
-    hideEndScreen();
-    startGame();
-  });
-  if (closeBtn) closeBtn.addEventListener('click', hideEndScreen);
+// Delegated click handler to reliably catch Play Again clicks
+document.addEventListener('click', (e) => {
+  const target = e.target;
+  if (target && target.id === 'modal-play-again') {
+    e.stopPropagation();
+    e.preventDefault();
+    hideEndModal();
+    // give browsers a tiny moment to hide modal before starting
+    setTimeout(startGame, 50);
+  }
 });
+
+// Direct fallback handler in case delegated listener misses the click
+const directPlayBtn = document.getElementById('modal-play-again');
+if (directPlayBtn) {
+  directPlayBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    hideEndModal();
+    setTimeout(startGame, 50);
+  });
+}
+
+// Confetti (small, short burst)
+let confettiTimer;
+let confettiStopTimeout;
+function runConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  canvas.classList.remove('hidden');
+  const ctx = canvas.getContext('2d');
+  const DPR = window.devicePixelRatio || 1;
+  canvas.width = window.innerWidth * DPR;
+  canvas.height = window.innerHeight * DPR;
+  canvas.style.width = window.innerWidth + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  ctx.scale(DPR, DPR);
+  // Two small radial bursts: left and right of the modal
+    // Single radial burst from center of the viewport
+    const pieces = [];
+    const colors = ['#ff0a54','#ff477e','#ffd166','#06d6a0','#4cc9f0','#9b5de5'];
+    const COUNT = 56; // total pieces for the central burst
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < COUNT; i++) {
+      const angle = Math.random() * Math.PI * 2; // full circle
+      const speed = 0.8 + Math.random() * 2.2; // gentle speeds
+      pieces.push({
+        x: centerX + (Math.random() - 0.5) * 10,
+        y: centerY + (Math.random() - 0.5) * 10,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        r: 2 + Math.random() * 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rot: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.3
+      });
+    }
+
+    const gravity = 0.06;
+    const drag = 0.995;
+
+  function frame() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of pieces) {
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.ellipse(0, 0, p.r, p.r * 0.6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vx *= drag;
+      p.vy *= drag;
+      p.vy += gravity;
+      p.rot += p.rotSpeed;
+    }
+    confettiTimer = requestAnimationFrame(frame);
+  }
+  frame();
+
+  // stop after ~1.2 seconds for a quick double-burst
+  if (confettiStopTimeout) clearTimeout(confettiStopTimeout);
+  confettiStopTimeout = setTimeout(() => stopConfetti(), 1200);
+}
+
+function stopConfetti() {
+  if (confettiTimer) { cancelAnimationFrame(confettiTimer); confettiTimer = null; }
+  if (confettiStopTimeout) { clearTimeout(confettiStopTimeout); confettiStopTimeout = null; }
+  const canvas = document.getElementById('confetti-canvas');
+  if (canvas) canvas.classList.add('hidden');
+}
