@@ -83,6 +83,12 @@ let badImageIndex = 0;
 const waterDropSound = new Audio('Sound effects/Water Drop Sound Effect.mp3');
 waterDropSound.preload = 'auto';
 
+// Background music (looping) played while the game is running
+const bgMusic = new Audio('Sound effects/bg-music.mp3');
+bgMusic.preload = 'auto';
+bgMusic.loop = true;
+bgMusic.volume = 0.45; // reasonable default volume
+
 const startBtn = document.getElementById('start-btn');
 
 // Prevent starting if no difficulty selected
@@ -182,6 +188,22 @@ function startGame() {
 
   // ensure modal is hidden when starting a new game
   hideEndModal();
+
+  // Start background music (best-effort): modern browsers require user gesture
+  try {
+    // Use cloneNode so we don't interrupt a previous Audio instance used elsewhere
+    // but keep a single instance for bg music so we can pause/reset it reliably.
+    bgMusic.currentTime = 0;
+    const playPromise = bgMusic.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch((err) => {
+        // autoplay exceptions are expected in some contexts; ignore silently
+        // console.debug('bgMusic.play() prevented:', err);
+      });
+    }
+  } catch (err) {
+    // swallow any errors related to playback
+  }
 }
 
 function createDrop() {
@@ -310,6 +332,14 @@ function stopGame() {
   }
   window.removeEventListener('keydown', handleKeyDown);
   window.removeEventListener('keyup', handleKeyUp);
+
+  // Stop background music and reset to start so it will play from the beginning next game
+  try {
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+  } catch (err) {
+    // ignore
+  }
 }
 
 // Inline end messages (shown in the score panel)
