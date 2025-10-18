@@ -27,7 +27,7 @@ function restartGame() {
     drops.forEach(d => d.remove());
   }
 
-  // Reset game state
+  // GAME RESE
   gameRunning = false;
   score = 0;
   if (scoreEl) scoreEl.textContent = score;
@@ -70,6 +70,14 @@ const difficulties = {
   hard:   { dropInterval: 600, badChance: 0.28, animationDuration: "3s" }
 };
 let currentDifficulty = '';
+
+// Round-robin images for bad drops (keep filenames matched to /img/)
+const badImages = [
+  'img/brown-leaf.png',
+  'img/banana-png.webp',
+  'img/trash-bag-png.png'
+];
+let badImageIndex = 0;
 
 const startBtn = document.getElementById('start-btn');
 
@@ -188,6 +196,13 @@ function createDrop() {
   if (isBad) {
     drop.classList.add('bad-drop');
     drop.dataset.bad = '1';
+    // assign the next bad image in round-robin order
+    const img = badImages[badImageIndex % badImages.length];
+    drop.style.backgroundImage = `url('${img}')`;
+    drop.style.backgroundSize = 'contain';
+    drop.style.backgroundRepeat = 'no-repeat';
+    drop.style.backgroundPosition = 'center';
+    badImageIndex += 1;
   }
 
   // Position the drop randomly across the game width
@@ -225,8 +240,20 @@ function createDrop() {
 
     if (intersects) {
       // points
-      if (drop.classList.contains('bad-drop')) {
+      const wasBad = drop.classList.contains('bad-drop');
+      if (wasBad) {
         score = Math.max(0, score - 1);
+        // briefly shake the bucket for feedback
+        const bucketEl = document.getElementById('bucket');
+        if (bucketEl) {
+          bucketEl.classList.remove('shake');
+          // force reflow to restart animation if already present
+          // eslint-disable-next-line no-unused-expressions
+          void bucketEl.offsetWidth;
+          bucketEl.classList.add('shake');
+          // remove the class after the animation completes
+          setTimeout(() => bucketEl.classList.remove('shake'), 500);
+        }
       } else {
         score += 1;
       }

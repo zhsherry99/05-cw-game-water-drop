@@ -155,24 +155,22 @@ body {
 .water-drop {
     position: absolute;
     top: -40px;               /* start slightly above the top */
-    width: 18px;
-    height: 18px;
-    background-color: #0099ff;
-    border-radius: 50%;
+    width: 28px;
+    height: 34px; /* sized to match typical water drop image proportions */
+    background: url('img/water.png') center/contain no-repeat;
+    background-color: transparent; /* allow transparent PNGs */
+    /* keep the element rectangular but visual comes from the image */
     animation: dropFall linear forwards;
     transform-origin: center;
-    cursor: pointer;
-    padding: 15px;  /* Add padding for larger click area */
-    margin: -15px;  /* Offset padding to maintain visual size */
-    transition: transform 0.1s ease;  /* Smooth hover effect */
 }
 
-.water-drop:hover {
-    transform: scale(1.1);  /* Slight grow effect on hover */
-}
+/* keep hover behavior minimal - no special effects */
 
 .bad-drop {
-    background-color: #ff4444;
+    width: 28px;
+    height: 34px;
+    background: url('img/banana-png.webp') center/contain no-repeat;
+    background-color: transparent;
 }
 
 .game-title {
@@ -181,6 +179,26 @@ body {
     margin-top: 0;
     margin-bottom: 5px;  /* reduced from 20px */
     text-align: center;
+}
+
+.site-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+.site-logo {
+    height: 44px;
+    width: auto;
+    display: block;
+}
+
+/* Utility: screen-reader only */
+.sr-only {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
 #bucket {
@@ -192,6 +210,20 @@ body {
     /* use the water can image as the bucket visual */
     background: url('img/water-can-transparent.png') center/contain no-repeat;
     background-color: transparent;
+}
+
+/* small shake animation for the bucket when a bad drop is caught */
+@keyframes bucket-shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-6px) rotate(-4deg); }
+    40% { transform: translateX(6px) rotate(4deg); }
+    60% { transform: translateX(-4px) rotate(-2deg); }
+    80% { transform: translateX(4px) rotate(2deg); }
+    100% { transform: translateX(0); }
+}
+
+#bucket.shake {
+    animation: bucket-shake 420ms ease-in-out;
 }
 
 #bucket img { 
