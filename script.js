@@ -79,6 +79,10 @@ const badImages = [
 ];
 let badImageIndex = 0;
 
+// Preload sound for good-drop catches
+const waterDropSound = new Audio('Sound effects/Water Drop Sound Effect.mp3');
+waterDropSound.preload = 'auto';
+
 const startBtn = document.getElementById('start-btn');
 
 // Prevent starting if no difficulty selected
@@ -256,6 +260,14 @@ function createDrop() {
         }
       } else {
         score += 1;
+        // play water drop sound for good catches (allow overlap)
+        try {
+          const s = waterDropSound.cloneNode();
+          s.play().catch(() => {});
+        } catch (err) {
+          waterDropSound.currentTime = 0;
+          waterDropSound.play().catch(() => {});
+        }
       }
       if (scoreEl) scoreEl.textContent = score;
       drop.remove();
