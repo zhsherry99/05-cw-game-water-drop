@@ -16,7 +16,17 @@
             <button id="start-btn">Start Game</button>
             <button id="stop-btn">Restart</button>
         </div>
-        
+
+        <div class="score-panel">
+  <!-- ...existing score elements ... -->
+          <label for="difficulty-select"  class="sr-only">Difficulty</label>
+          <select id="difficulty-select" aria-label="Difficulty">
+            <option value="easy">Easy</option>
+            <option value="normal" selected>Normal</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+
         <div id="game-container">
             <div id="bucket" tabindex="0" aria-label="Bucket"></div>
         </div>

@@ -1,9 +1,9 @@
 // Variables to control game state
-let gameRunning = false; // Keeps track of whether game is active or not
+let gameRunning = false; // Keeps track of whether game is active 
 let dropMaker; // Will store our timer that creates drops regularly
-let score = 0; // Player score
+let score = 0; 
 const scoreEl = document.getElementById("score");
-let timeLeft = 30; // seconds for the game
+let timeLeft = 30; 
 let timerInterval; // Interval for countdown
 const timeEl = document.getElementById("time");
 
@@ -55,6 +55,36 @@ function handleKeyUp(e) {
   if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveRight = false;
 }
 
+function createDrop() {
+  // ...existing code...
+  const drop = document.createElement("div");
+  drop.className = "water-drop";
+  // apply configured animation duration:
+  drop.style.animationDuration = difficulties[currentDifficulty].animationDuration;
+  // ...existing code...
+}
+
+const difficulties = {
+  easy:   { dropInterval: 1200, badChance: 0.12, animationDuration: "7s" },
+  normal: { dropInterval: 1000, badChance: 0.18, animationDuration: "5s" },
+  hard:   { dropInterval: 600, badChance: 0.28, animationDuration: "3s" }
+};
+// let currentDifficulty = 'normal';
+
+const diffSelect = document.getElementById('difficulty-select');
+if (diffSelect) {
+  diffSelect.value = currentDifficulty;
+  diffSelect.addEventListener('change', (e) => {
+    currentDifficulty = e.target.value || 'normal';
+    // If a game is running, apply new drop rate immediately
+    if (gameRunning && dropMaker) {
+      clearInterval(dropMaker);
+      dropMaker = setInterval(createDrop, difficulties[currentDifficulty].dropInterval);
+    }
+  });
+}
+
+
 function startGame() {
   // Prevent multiple games from running at once
   if (gameRunning) return;
@@ -80,8 +110,8 @@ function startGame() {
     }
   }, 1000);
 
-  // Create new drops every second (1000 milliseconds)
-  dropMaker = setInterval(createDrop, 1000);
+  if (dropMaker) { clearInterval(dropMaker); dropMaker = null; }
+  dropMaker = setInterval(createDrop, difficulties[currentDifficulty].dropInterval);
 
   // Center bucket in the container
   const container = document.getElementById('game-container');
@@ -124,12 +154,12 @@ function createDrop() {
 
   // Make drops different sizes for visual variety
   const initialSize = 60;
-  const sizeMultiplier = Math.random() * 0.8 + 0.5;
+  const sizeMultiplier = Math.random() * 0.2 + 0.5;
   const size = initialSize * sizeMultiplier;
   drop.style.width = drop.style.height = `${size}px`;
 
   // Randomly make some drops "bad" (red) which penalize the player if caught
-  const isBad = Math.random() < 0.18; // ~18% chance
+  const isBad = Math.random() < 0.2; // ~18% chance
   if (isBad) {
     drop.classList.add('bad-drop');
     drop.dataset.bad = '1';
@@ -142,7 +172,7 @@ function createDrop() {
   drop.style.left = xPosition + "px";
 
   // Make drops fall for 4 seconds
-  drop.style.animationDuration = "4s";
+  drop.style.animationDuration = difficulties[currentDifficulty].animationDuration;
 
   // Add the new drop to the game screen
   document.getElementById("game-container").appendChild(drop);
@@ -169,7 +199,7 @@ function createDrop() {
                          dropRect.top > bucketRect.bottom);
 
     if (intersects) {
-      // If it's a bad drop, penalize; otherwise award a point
+      // points
       if (drop.classList.contains('bad-drop')) {
         score = Math.max(0, score - 1);
       } else {
