@@ -58,7 +58,6 @@ function handleKeyUp(e) {
 function startGame() {
   // Prevent multiple games from running at once
   if (gameRunning) return;
-
   gameRunning = true;
 
   // Reset score when a new game starts
