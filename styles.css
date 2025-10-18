@@ -29,15 +29,18 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #f0f0f0;
+    background-color: #8BD1CB;
     font-family: Arial, sans-serif;
 }
 
 .game-wrapper {
-    display: flex-wrap;
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .score-panel {
@@ -58,26 +61,31 @@ body {
 }
 
 #game-container {
-    width: relative;
+    width: min(700px, 96vw);
     height: 450px;
     background-color: #e6f7ff;
-    border: 2px solid #333;
     border-radius: 8px;
     position: relative;
     overflow: hidden;
-    display: flex;            /* ensure wrapper is a flex container */
-    flex-wrap: wrap;          /* keep wrapping behavior */
-    flex-direction: column;
-    align-items: center;      /* horizontal centering */
-    justify-content: center;  /* vertical centering */
-    gap: 20px;
-    min-height: 100vh; 
+    aspect-ratio: 2 / 2;     
+    max-height: calc(100vh - 180px); /* leave room for header/controls */
+    overflow: hidden;
+    margin: 12px auto;
+    background-size: cover;
+    background-position: center;
+    /* display: flex;            /* ensure wrapper is a flex container */
+    /* flex-wrap: wrap;          keep wrapping behavior */
+    /* flex-direction: column; */
+    /* align-items: center;      horizontal centering */
+    /* justify-content: center;  vertical centering */
+    /* gap: 20px; */
+    /* min-height: 100vh;  */ */
 }
 
 
 #start-btn {
     padding: 8px 16px;
-    background-color: #4CAF50;
+    background-color: #159A48;
     color: white;
     border: none;
     border-radius: 4px;
@@ -91,7 +99,7 @@ body {
 
 #stop-btn {
     padding: 8px 16px;
-    background-color: #d9534f;
+    background-color: #F5402C;
     color: white;
     border: none;
     border-radius: 4px;
