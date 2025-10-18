@@ -69,10 +69,33 @@ const difficulties = {
   normal: { dropInterval: 1000, badChance: 0.18, animationDuration: "5s" },
   hard:   { dropInterval: 600, badChance: 0.28, animationDuration: "3s" }
 };
-let currentDifficulty = 'normal';
+let currentDifficulty = '';
+
+const startBtn = document.getElementById('start-btn');
+
+// Prevent starting if no difficulty selected
+function ensureDifficultySelected() {
+  if (!currentDifficulty) {
+    // provide a gentle UX hint and block start
+    if (startBtn) {
+      startBtn.disabled = true;
+      startBtn.title = 'Choose a difficulty to enable Start';
+    }
+    return false;
+  }
+  if (startBtn) {
+    startBtn.disabled = false;
+    startBtn.title = '';
+  }
+  return true;
+}
 
 const diffSelect = document.getElementById('difficulty-select');
 if (diffSelect) {
+  if (diffSelect.value) {
+    currentDifficulty = diffSelect.value;
+  }
+  ensureDifficultySelected();
   diffSelect.value = currentDifficulty;
   diffSelect.addEventListener('change', (e) => {
     currentDifficulty = e.target.value || 'normal';
@@ -85,9 +108,11 @@ if (diffSelect) {
 }
 
 
+
 function startGame() {
   // Prevent multiple games from running at once
   if (gameRunning) return;
+  if (!ensureDifficultySelected()) return;
   gameRunning = true;
 
   // Reset score when a new game starts
