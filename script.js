@@ -69,7 +69,7 @@ const difficulties = {
   normal: { dropInterval: 1000, badChance: 0.18, animationDuration: "5s" },
   hard:   { dropInterval: 600, badChance: 0.28, animationDuration: "3s" }
 };
-// let currentDifficulty = 'normal';
+let currentDifficulty = 'normal';
 
 const diffSelect = document.getElementById('difficulty-select');
 if (diffSelect) {
