@@ -13,7 +13,7 @@ Secondary Colors:
 - Pink:       #F16061
 
 Fonts:
-- Proxima Nova
+- Lato
 - Avenir
 
 */
@@ -30,7 +30,7 @@ body {
     align-items: center;
     min-height: 100vh;
     background-color: #8BD1CB;
-    font-family: Proxima Nova, sans-serif;
+    font-family: 'Lato', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 .game-wrapper {
@@ -128,14 +128,67 @@ body {
     background-color: #45a049;
 }
 
+/* Play button variant: circular button with triangle */
+.play-btn {
+    width: 42px;
+    height: 38px;
+    border-radius: 999px;
+    background: #159A48;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+.play-btn::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-left: 12px solid #fff;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+.play-btn:disabled,
+.play-btn[disabled] {
+    opacity: 0.9;
+    cursor: not-allowed;
+}
+.play-btn:focus {
+    outline: 3px solid rgba(46,157,247,0.25);
+}
+
+/* Refresh / Restart button: circular with refresh icon */
+.refresh-btn {
+    width: 40px;
+    height: 38px;
+    border-radius: 999px;
+    background: #F5402C; /* red to indicate reset */
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+.refresh-btn svg { display: block; }
+.refresh-btn:disabled,
+.refresh-btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.refresh-btn:focus {
+    outline: 3px solid rgba(245,64,44,0.18);
+}
+
 #stop-btn {
-    padding: 8px 16px;
     background-color: #F5402C;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
     margin-left: 8px;
 }
 

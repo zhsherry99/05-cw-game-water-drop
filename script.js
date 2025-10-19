@@ -100,9 +100,9 @@ function createDrop() {
 }
 
 const difficulties = {
-  easy:   { dropInterval: 1200, badChance: 0.12, animationDuration: "7s" },
-  normal: { dropInterval: 1000, badChance: 0.18, animationDuration: "5s" },
-  hard:   { dropInterval: 600, badChance: 0.50, animationDuration: "3s" }
+  easy:   { dropInterval: 900, badChance: 0.2, animationDuration: "9s" },
+  normal: { dropInterval: 500, badChance: 0.3, animationDuration: "10s" },
+  hard:   { dropInterval: 400, badChance: 0.4, animationDuration: "11s" }
 };
 let currentDifficulty = '';
 
@@ -288,7 +288,7 @@ function createDrop() {
   drop.style.width = drop.style.height = `${size}px`;
 
   // Randomly make some drops "bad" (red) which penalize the player if caught
-  const isBad = Math.random() < 0.2; // ~18% chance
+  const isBad = Math.random() < difficulties[currentDifficulty].badChance;
   if (isBad) {
     drop.classList.add('bad-drop');
     drop.dataset.bad = '1';
