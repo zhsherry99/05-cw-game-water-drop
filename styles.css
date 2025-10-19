@@ -46,13 +46,28 @@ body {
 
 .score-panel {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;  /* Space between score and button */
     align-items: center;
-    width: 550px;
+    gap: 8px;
+    width: 100%;
+    max-width: 680px;
     padding: 10px;
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.score-panel .controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.score-panel .left {
+    display: flex;
+    gap: 18px;
+    align-items: center;
 }
 
 .timer {
@@ -62,15 +77,15 @@ body {
 }
 
 #game-container {
-    width: min(700px, 96vw);
+    width: 100%;
+    max-width: 680px; /* match .score-panel max-width for alignment */
     height: 450px;
     background-color: #e6f7ff;
     border-radius: 8px;
     position: relative;
     overflow: hidden;
-    aspect-ratio: 2 / 2;     
+    aspect-ratio: 2 / 2;
     max-height: calc(100vh - 180px); /* leave room for header/controls */
-    overflow: hidden;
     margin: 12px auto;
     background-size: cover;
     background-position: center;
@@ -130,12 +145,12 @@ body {
 
 /* Play button variant: circular button with triangle */
 .play-btn {
-    width: 42px;
+    width: 72px;
     height: 38px;
     border-radius: 999px;
     background: #159A48;
     border: none;
-    display: inline-flex;
+    display: flex-wrap;
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -161,7 +176,7 @@ body {
 
 /* Refresh / Restart button: circular with refresh icon */
 .refresh-btn {
-    width: 40px;
+    width: 72px;
     height: 38px;
     border-radius: 999px;
     background: #F5402C; /* red to indicate reset */
@@ -376,6 +391,12 @@ body {
     align-items: center;
     padding: 0 12px;
     margin: 0;
+}
+/* Make the donate paragraph use Lato and stand out */
+.site-footer p {
+    font-family: 'Lato', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+    margin-right: 1px;
 }
 .footer-links a {
     color: #084c61; /* dark teal for contrast */
