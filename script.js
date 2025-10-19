@@ -60,6 +60,18 @@ function restartGame() {
   } catch (err) {
     // ignore DOM issues
   }
+  // Clear difficulty selection so player must pick again
+  try {
+    const ds = document.getElementById('difficulty-select');
+    if (ds) {
+      ds.selectedIndex = 0; // placeholder
+      ds.classList.remove('difficulty-blink');
+    }
+    currentDifficulty = '';
+    ensureDifficultySelected();
+  } catch (err) {
+    // ignore
+  }
   // Do NOT auto-start: wait for player to click Start Game
   // Keep gameRunning=false so startGame() may be called by the player
 }
@@ -162,7 +174,22 @@ if (diffSelect) {
 function startGame() {
   // Prevent multiple games from running at once
   if (gameRunning) return;
-  if (!ensureDifficultySelected()) return;
+  if (!ensureDifficultySelected()) {
+    // trigger a visible blinking red outline on the difficulty select for 2s
+    try {
+      if (diffSelect) {
+        diffSelect.classList.remove('difficulty-blink');
+        // force reflow to restart animation
+        // eslint-disable-next-line no-unused-expressions
+        void diffSelect.offsetWidth;
+        diffSelect.classList.add('difficulty-blink');
+        setTimeout(() => { if (diffSelect) diffSelect.classList.remove('difficulty-blink'); }, 2000);
+      }
+    } catch (err) {
+      // ignore
+    }
+    return;
+  }
   // Play a short start sound (best-effort)
   try {
     gameStartSound.currentTime = 0;
@@ -476,8 +503,16 @@ document.addEventListener('click', (e) => {
     e.stopPropagation();
     e.preventDefault();
     hideEndModal();
-    // give browsers a tiny moment to hide modal before starting
-    setTimeout(startGame, 50);
+    // Do NOT auto-start. Force the player to re-select difficulty before starting again.
+    try {
+      currentDifficulty = '';
+      const ds = document.getElementById('difficulty-select');
+      if (ds) ds.selectedIndex = 0; // choose the placeholder
+      ensureDifficultySelected();
+      if (ds) ds.focus();
+    } catch (err) {
+      // ignore
+    }
   }
 });
 
@@ -488,7 +523,15 @@ if (directPlayBtn) {
     e.stopPropagation();
     e.preventDefault();
     hideEndModal();
-    setTimeout(startGame, 50);
+    // Force difficulty re-selection instead of auto-starting
+    try {
+      currentDifficulty = '';
+      if (diffSelect) diffSelect.selectedIndex = 0;
+      ensureDifficultySelected();
+      if (diffSelect) diffSelect.focus();
+    } catch (err) {
+      // ignore
+    }
   });
 }
 
