@@ -49,6 +49,17 @@ function restartGame() {
   } catch (err) {
     // ignore
   }
+  // Also reset the bucket (jerry can) to the horizontal center of the game container
+  try {
+    const containerEl = document.getElementById('game-container');
+    const bucketEl = document.getElementById('bucket');
+    if (containerEl && bucketEl) {
+      const left = Math.max(0, (containerEl.offsetWidth - bucketEl.offsetWidth) / 2);
+      bucketEl.style.left = left + 'px';
+    }
+  } catch (err) {
+    // ignore DOM issues
+  }
   // Do NOT auto-start: wait for player to click Start Game
   // Keep gameRunning=false so startGame() may be called by the player
 }
@@ -102,12 +113,14 @@ bgMusic.loop = true;
 bgMusic.volume = 0.45; // reasonable default volume
 
 // Short start sound played when the game starts or when Play Again is pressed
-const gameStartSound = new Audio('Sound effects/game-start.mp3');
+const gameStartSound = new Audio('Sound effects/start.mp3');
 gameStartSound.preload = 'auto';
 gameStartSound.loop = false;
 gameStartSound.volume = 0.85;
 
 const startBtn = document.getElementById('start-btn');
+// Start disabled initially until player picks a difficulty
+if (startBtn) startBtn.disabled = true;
 
 // Prevent starting if no difficulty selected
 function ensureDifficultySelected() {
@@ -128,13 +141,14 @@ function ensureDifficultySelected() {
 
 const diffSelect = document.getElementById('difficulty-select');
 if (diffSelect) {
-  if (diffSelect.value) {
-    currentDifficulty = diffSelect.value;
-  }
+  // At load the placeholder option will be selected; wait for a real choice
   ensureDifficultySelected();
-  diffSelect.value = currentDifficulty;
   diffSelect.addEventListener('change', (e) => {
-    currentDifficulty = e.target.value || 'normal';
+    // Only accept non-empty selections
+    if (e.target.value) {
+      currentDifficulty = e.target.value;
+    }
+    ensureDifficultySelected();
     // If a game is running, apply new drop rate immediately
     if (gameRunning && dropMaker) {
       clearInterval(dropMaker);
