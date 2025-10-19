@@ -6,6 +6,8 @@ const scoreEl = document.getElementById("score");
 let timeLeft = 30; 
 let timerInterval; // Interval for countdown
 const timeEl = document.getElementById("time");
+// Track whether we've shown the halfway banner this round
+let halfwayShown = false;
 
 // Wait for button click to start the game
 document.getElementById("start-btn").addEventListener("click", startGame);
@@ -31,12 +33,22 @@ function restartGame() {
   gameRunning = false;
   score = 0;
   if (scoreEl) scoreEl.textContent = score;
+  // Reset halfway banner flag when restarting
+  halfwayShown = false;
+  removeHalfwayBanner();
   timeLeft = 30;
   if (timeEl) timeEl.textContent = timeLeft;
 
   // Hide modal/confetti if visible
   hideEndModal();
   stopConfetti();
+  // Stop background music when the user presses Restart
+  try {
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+  } catch (err) {
+    // ignore
+  }
   // Do NOT auto-start: wait for player to click Start Game
   // Keep gameRunning=false so startGame() may be called by the player
 }
@@ -67,7 +79,7 @@ function createDrop() {
 const difficulties = {
   easy:   { dropInterval: 1200, badChance: 0.12, animationDuration: "7s" },
   normal: { dropInterval: 1000, badChance: 0.18, animationDuration: "5s" },
-  hard:   { dropInterval: 600, badChance: 0.28, animationDuration: "3s" }
+  hard:   { dropInterval: 600, badChance: 0.50, animationDuration: "3s" }
 };
 let currentDifficulty = '';
 
@@ -80,7 +92,7 @@ const badImages = [
 let badImageIndex = 0;
 
 // Preload sound for good-drop catches
-const waterDropSound = new Audio('Sound effects/Water Drop Sound Effect.mp3');
+const waterDropSound = new Audio('Sound effects/droplet.mp3');
 waterDropSound.preload = 'auto';
 
 // Background music (looping) played while the game is running
@@ -88,6 +100,12 @@ const bgMusic = new Audio('Sound effects/bg-music.mp3');
 bgMusic.preload = 'auto';
 bgMusic.loop = true;
 bgMusic.volume = 0.45; // reasonable default volume
+
+// Short start sound played when the game starts or when Play Again is pressed
+const gameStartSound = new Audio('Sound effects/game-start.mp3');
+gameStartSound.preload = 'auto';
+gameStartSound.loop = false;
+gameStartSound.volume = 0.85;
 
 const startBtn = document.getElementById('start-btn');
 
@@ -131,11 +149,22 @@ function startGame() {
   // Prevent multiple games from running at once
   if (gameRunning) return;
   if (!ensureDifficultySelected()) return;
+  // Play a short start sound (best-effort)
+  try {
+    gameStartSound.currentTime = 0;
+    const p = gameStartSound.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  } catch (err) {
+    // ignore playback errors
+  }
   gameRunning = true;
 
   // Reset score when a new game starts
   score = 0;
   if (scoreEl) scoreEl.textContent = score;
+  // reset halfway state when starting a new game
+  halfwayShown = false;
+  removeHalfwayBanner();
 
   // Reset and start the countdown timer
   timeLeft = 30;
@@ -292,6 +321,11 @@ function createDrop() {
         }
       }
       if (scoreEl) scoreEl.textContent = score;
+      // If player reaches 10 points and we haven't shown the halfway message yet, show it
+      if (score === 10 && !halfwayShown) {
+        halfwayShown = true;
+        showHalfwayBanner();
+      }
       drop.remove();
       clearInterval(collisionChecker);
     }
@@ -393,6 +427,32 @@ function hideEndModal() {
     modal.style.display = 'none';
   }
   stopConfetti();
+}
+
+// Show a transient "Halfway there" banner at the top of the game container
+function showHalfwayBanner() {
+  const container = document.getElementById('game-container');
+  if (!container) return;
+  // If already present, don't add another
+  if (container.querySelector('.halfway-banner')) return;
+  const el = document.createElement('div');
+  el.className = 'halfway-banner';
+  el.textContent = 'Halfway there — keep going!';
+  container.appendChild(el);
+  // Auto-hide after 2.8s
+  setTimeout(() => {
+    el.style.transition = 'opacity 200ms ease, transform 200ms ease';
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-50%) translateY(-6px)';
+    setTimeout(() => { el.remove(); }, 300);
+  }, 2800);
+}
+
+function removeHalfwayBanner() {
+  const container = document.getElementById('game-container');
+  if (!container) return;
+  const existing = container.querySelectorAll('.halfway-banner');
+  existing.forEach(e => e.remove());
 }
 
 // Delegated click handler to reliably catch Play Again clicks
