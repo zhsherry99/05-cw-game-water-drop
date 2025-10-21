@@ -480,20 +480,44 @@ function showHalfwayBanner() {
   el.className = 'halfway-banner';
   el.textContent = 'Halfway there — keep going!';
   container.appendChild(el);
-  // Auto-hide after 2.8s
-  setTimeout(() => {
-    el.style.transition = 'opacity 200ms ease, transform 200ms ease';
-    el.style.opacity = '0';
-    el.style.transform = 'translateX(-50%) translateY(-6px)';
-    setTimeout(() => { el.remove(); }, 300);
-  }, 2800);
+  // Force a reflow so that transition will run when we add the .show class
+  // eslint-disable-next-line no-unused-expressions
+  void el.offsetWidth;
+  el.classList.add('show');
+
+  // Auto-hide after 2.8s using transition classes
+  const hideAfter = 2800;
+  const removeAfter = 3200; // small buffer after transition
+  const hideTimer = setTimeout(() => {
+    // add hide class to trigger the transition out
+    el.classList.remove('show');
+    el.classList.add('hide');
+    // Wait for transitionend to remove element; fallback after a timeout
+    const cleanup = () => { if (el && el.parentNode) el.parentNode.removeChild(el); };
+    let removed = false;
+    const onEnd = (ev) => {
+      if (ev.propertyName === 'opacity') {
+        if (!removed) { removed = true; cleanup(); }
+      }
+    };
+    el.addEventListener('transitionend', onEnd, { once: true });
+    setTimeout(() => { if (!removed) { removed = true; cleanup(); } }, removeAfter - hideAfter + 200);
+  }, hideAfter);
 }
 
 function removeHalfwayBanner() {
   const container = document.getElementById('game-container');
   if (!container) return;
   const existing = container.querySelectorAll('.halfway-banner');
-  existing.forEach(e => e.remove());
+  existing.forEach(e => {
+    // trigger hide transition, then remove after it finishes
+    e.classList.remove('show');
+    e.classList.add('hide');
+    const onEnd = () => { if (e && e.parentNode) e.parentNode.removeChild(e); };
+    e.addEventListener('transitionend', onEnd, { once: true });
+    // fallback
+    setTimeout(() => { if (e && e.parentNode) e.parentNode.removeChild(e); }, 400);
+  });
 }
 
 // Delegated click handler to reliably catch Play Again clicks
